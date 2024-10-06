@@ -21,13 +21,18 @@ uint8_t adc_read10bValue_Percent(int adcChannel)
 
 uint8_t adc_readJoystick_percent(void)
 {
-	uint8_t joystick_percent = adc_read10bValue_Percent(PIN_USER_JOYSTICK);
+    uint8_t joystick_percent = adc_read10bValue_Percent(PIN_USER_JOYSTICK);
 
-	#ifdef INVERT_JOYSTICK_DIRECTION
-		joystick_percent = 100 - joystick_percent;
-	#endif
+    #ifdef INVERT_JOYSTICK_DIRECTION
+        joystick_percent = 100 - joystick_percent;
+    #endif
 
-	return joystick_percent;
+    #ifdef SLIDER_IS_INSTALLED
+        // Apply the scaling and offset adjustment when the slider is installed
+        joystick_percent = 1.26 * joystick_percent - 13.5;
+    #endif
+
+    return joystick_percent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
