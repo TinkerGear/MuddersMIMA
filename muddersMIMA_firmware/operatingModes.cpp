@@ -7,6 +7,14 @@
 uint8_t joystick_percent_stored = JOYSTICK_NEUTRAL_NOM_PERCENT;
 bool useStoredJoystickValue = NO; //JTS2doLater: I'm not convinced this is required
 
+// Variables to track clutch state, release time, and ramp up
+bool clutchPressed = false;
+uint32_t clutchReleaseTime = 0;
+bool rampingUp = false;
+uint32_t rampStartTime = 0;
+bool derating = false;
+uint32_t derateStartTime = 0;
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void mode_OEM(void)
@@ -224,10 +232,6 @@ void mode_INWORK_PHEV_mudder(void)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< Updated upstream
-=======
-
-
 //Heavily based on Mudders code above. Added a max RPM to prevent redline, derating logic under 2k RPM and ramp-up logic to smoothly transition between states. 
 void mode_INWORK_PHEV_AfterEffect(void)
 {
@@ -377,11 +381,6 @@ void mode_INWORK_PHEV_AfterEffect(void)
     }
 }
 
-
-
-
-
->>>>>>> Stashed changes
 void operatingModes_handler(void)
 {
 	uint8_t toggleState = gpio_getButton_toggle();
