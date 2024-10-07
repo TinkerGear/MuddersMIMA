@@ -269,27 +269,28 @@ void mode_INWORK_PHEV_AfterEffect(void)
 
         // Handle maximum RPM logic
         uint16_t currentRPM = engineSignals_getLatestRPM();
-if (currentRPM >= MAX_RPM)
-{
-    joystick_percent = JOYSTICK_NEUTRAL_NOM_PERCENT; // Disable assist at max RPM
-}
-else if (currentRPM < (DERATE_UNDER_RPM - 100))
-{
-    // Remap only the assist range to DERATE_PERCENT, keep neutral and regen ranges intact
-    if (joystick_percent > JOYSTICK_NEUTRAL_MAX_PERCENT)
-    {
-        joystick_percent = map(joystick_percent, JOYSTICK_NEUTRAL_MAX_PERCENT, 100, JOYSTICK_NEUTRAL_MAX_PERCENT, DERATE_PERCENT);
-    }
-} 
-else if (currentRPM < DERATE_UNDER_RPM) 
-{
-    // Scale DERATE_PERCENT from its value to 100% as currentRPM approaches DERATE_UNDER_RPM
-    int scaledPercent = map(currentRPM, DERATE_UNDER_RPM - 100, DERATE_UNDER_RPM, DERATE_PERCENT, 100);
-    if (joystick_percent > JOYSTICK_NEUTRAL_MAX_PERCENT)
-    {
-        joystick_percent = map(joystick_percent, JOYSTICK_NEUTRAL_MAX_PERCENT, 100, JOYSTICK_NEUTRAL_MAX_PERCENT, scaledPercent);
-    }
-}
+
+        if (currentRPM >= MAX_RPM)
+        {
+            joystick_percent = JOYSTICK_NEUTRAL_NOM_PERCENT; // Disable assist at max RPM
+        }
+        else if (currentRPM < (DERATE_UNDER_RPM - 100))
+        {
+            // Remap only the assist range to DERATE_PERCENT, keep neutral and regen ranges intact
+            if (joystick_percent > JOYSTICK_NEUTRAL_MAX_PERCENT)
+            {
+                joystick_percent = map(joystick_percent, JOYSTICK_NEUTRAL_MAX_PERCENT, 100, JOYSTICK_NEUTRAL_MAX_PERCENT, DERATE_PERCENT);
+            }
+        } 
+        else if (currentRPM < DERATE_UNDER_RPM) 
+        {
+            // Scale DERATE_PERCENT from its value to 100% as currentRPM approaches DERATE_UNDER_RPM
+            int scaledPercent = map(currentRPM, DERATE_UNDER_RPM - 100, DERATE_UNDER_RPM, DERATE_PERCENT, 100);
+            if (joystick_percent > JOYSTICK_NEUTRAL_MAX_PERCENT)
+            {
+                joystick_percent = map(joystick_percent, JOYSTICK_NEUTRAL_MAX_PERCENT, 100, JOYSTICK_NEUTRAL_MAX_PERCENT, scaledPercent);
+            }
+        }
 
         // Use ECM regen request when the user is braking and joystick is neutral
         if ((joystick_percent > JOYSTICK_NEUTRAL_MIN_PERCENT)     && // Joystick is neutral
