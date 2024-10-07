@@ -28,8 +28,8 @@
   //RPM under which the IMA will derate output to avoid errors
   const uint16_t DERATE_UNDER_RPM = 2000; 
 
-  //Output percent to derate to if under DERATE_UNDER_RPM
-  const uint8_t DERATE_PERCENT = 70; 
+  //Output percent to derate TO if under DERATE_UNDER_RPM
+  const uint8_t DERATE_PERCENT = 80; 
 
   //Time to ramp from 0 to joystick value (in ms)
   const uint16_t RAMP_UP_DURATION = 250;
