@@ -22,6 +22,7 @@ void setup()
 {
 	gpio_begin();
 	engineSignals_begin();
+  spiToLiBCM_begin();
 	Serial.begin(115200); //USB
 	Serial.print(F("\n\nWelcome to LiControl v" FW_VERSION ", " BUILD_DATE "\nType '$HELP' for more info\n"));
 }
@@ -33,6 +34,7 @@ void loop()
 	brakeLights_handler();
 	operatingModes_handler();
 	USB_userInterface_handler();
+  LiBCM_handler();
 	
 	debugUSB_printLatestData();
 
