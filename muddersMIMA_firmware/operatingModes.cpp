@@ -269,62 +269,27 @@ void mode_INWORK_PHEV_AfterEffect(void)
 
         // Handle maximum RPM logic
         uint16_t currentRPM = engineSignals_getLatestRPM();
-        if (currentRPM >= MAX_RPM)
-        {
-            joystick_percent = JOYSTICK_NEUTRAL_NOM_PERCENT; // Disable assist at max RPM
-        }
-        else if (currentRPM < DERATE_UNDER_RPM && !derating)
-        {
-            // Apply derating when RPM is under threshold
-            joystick_percent = (joystick_percent * DERATE_PERCENT) / 100; // Derating joystick value
-            ECM_CMDPWR_percent = (ECM_CMDPWR_percent * DERATE_PERCENT) / 100; // Derating OEM signal
-            derating = true;
-            derateStartTime = millis();
-        }
-        else if (currentRPM >= DERATE_UNDER_RPM && derating)
-        {
-            // Re-enable assist with ramp-up when RPM exceeds DERATE_UNDER_RPM
-            derating = false;
-            rampingUp = true;
-            rampStartTime = millis();
-        }
-
-    // Ramp up assist after clutch is released or exiting derating
-    if (!clutchPressed && rampingUp && joystick_percent > JOYSTICK_NEUTRAL_NOM_PERCENT) 
+if (currentRPM >= MAX_RPM)
+{
+    joystick_percent = JOYSTICK_NEUTRAL_NOM_PERCENT; // Disable assist at max RPM
+}
+else if (currentRPM < (DERATE_UNDER_RPM - 100))
+{
+    // Remap only the assist range to DERATE_PERCENT, keep neutral and regen ranges intact
+    if (joystick_percent > JOYSTICK_NEUTRAL_MAX_PERCENT)
     {
-        uint32_t rampDuration = millis() - rampStartTime;
-
-        // Check if RAMP_UP_DURATION is zero to avoid division by zero
-        if (RAMP_UP_DURATION > 0) 
-        {
-            if (rampDuration < RAMP_UP_DURATION) 
-            {
-                joystick_percent = (joystick_percent * rampDuration) / RAMP_UP_DURATION;
-            } 
-            else 
-            {
-                rampingUp = false; // Ramp-up complete
-            }
-        } 
-        else 
-        {
-            rampingUp = false;
-        }
+        joystick_percent = map(joystick_percent, JOYSTICK_NEUTRAL_MAX_PERCENT, 100, JOYSTICK_NEUTRAL_MAX_PERCENT, DERATE_PERCENT);
     }
-
-    // Derating logic with smooth scaling using map()
-    if (currentRPM < (DERATE_UNDER_RPM - 100)) 
+} 
+else if (currentRPM < DERATE_UNDER_RPM) 
+{
+    // Scale DERATE_PERCENT from its value to 100% as currentRPM approaches DERATE_UNDER_RPM
+    int scaledPercent = map(currentRPM, DERATE_UNDER_RPM - 100, DERATE_UNDER_RPM, DERATE_PERCENT, 100);
+    if (joystick_percent > JOYSTICK_NEUTRAL_MAX_PERCENT)
     {
-        // Remap joystick_percent to DERATE_PERCENT
-        joystick_percent = map(joystick_percent, 0, 100, 0, DERATE_PERCENT);
-    } 
-    else if (currentRPM < DERATE_UNDER_RPM) 
-    {
-        // Scale DERATE_PERCENT from its value to 100% as currentRPM approaches DERATE_UNDER_RPM
-        int scaledPercent = map(currentRPM, DERATE_UNDER_RPM - 100, DERATE_UNDER_RPM, DERATE_PERCENT, 100);
-        joystick_percent = map(joystick_percent, 0, 100, 0, scaledPercent);
+        joystick_percent = map(joystick_percent, JOYSTICK_NEUTRAL_MAX_PERCENT, 100, JOYSTICK_NEUTRAL_MAX_PERCENT, scaledPercent);
     }
-
+}
 
         // Use ECM regen request when the user is braking and joystick is neutral
         if ((joystick_percent > JOYSTICK_NEUTRAL_MIN_PERCENT)     && // Joystick is neutral
