@@ -8,7 +8,7 @@
 	#include "muddersMIMA.h"  //For Arduino IDE compatibility
 
 	#define FW_VERSION "0.2.0"
-    #define BUILD_DATE "2024JUN05"
+    #define BUILD_DATE "2024OCT06"
 
 	#define CPU_MAP_ATMEGA328p
     
@@ -26,12 +26,12 @@
   const uint16_t CLUTCH_DELAY = 500; 
 
   //RPM under which the IMA will derate output to avoid errors
-  const uint16_t DERATE_UNDER_RPM = 2000; 
+  const uint16_t DERATE_UNDER_RPM = 2100; 
 
   //Output percent to derate to if under DERATE_UNDER_RPM
-  const uint8_t DERATE_PERCENT = 75; 
+  const uint8_t DERATE_PERCENT = 70; 
 
-  //Time in ms to ramp from 0 to joystick value
+  //Time to ramp from 0 to joystick value (in ms)
   const uint16_t RAMP_UP_DURATION = 0;
 
 	//choose behavior when three position switch...
@@ -40,18 +40,20 @@
 		//#define MODE0_BEHAVIOR() mode_manualAssistRegen_withAutoStartStop();
 		//#define MODE0_BEHAVIOR() mode_manualAssistRegen_ignoreECM();
 		//#define MODE0_BEHAVIOR() mode_INWORK_PHEV_mudder();
+    //#define MODE1_BEHAVIOR() mode_INWORK_PHEV_AfterEffect();
 
 	//...is in the '1' position
 		//#define MODE1_BEHAVIOR() mode_OEM()
-	  	//#define MODE1_BEHAVIOR() mode_manualAssistRegen_withAutoStartStop();
+	  //#define MODE1_BEHAVIOR() mode_manualAssistRegen_withAutoStartStop();
 		//#define MODE1_BEHAVIOR() mode_manualAssistRegen_ignoreECM();
-		//#define MODE1_BEHAVIOR() mode_INWORK_PHEV_mudder();
-    	#define MODE1_BEHAVIOR() mode_INWORK_PHEV_AfterEffect();
+		#define MODE1_BEHAVIOR() mode_INWORK_PHEV_mudder();
+    //#define MODE1_BEHAVIOR() mode_INWORK_PHEV_AfterEffect();
 
 	//...is in the '2' position
 		//#define MODE2_BEHAVIOR() mode_OEM()
 		//#define MODE2_BEHAVIOR() mode_manualAssistRegen_withAutoStartStop();
-	  	  #define MODE2_BEHAVIOR() mode_manualAssistRegen_ignoreECM();
+	  //#define MODE2_BEHAVIOR() mode_manualAssistRegen_ignoreECM();
 		//#define MODE2_BEHAVIOR() mode_INWORK_PHEV_mudder();
+    #define MODE2_BEHAVIOR() mode_INWORK_PHEV_AfterEffect();
 
 #endif
